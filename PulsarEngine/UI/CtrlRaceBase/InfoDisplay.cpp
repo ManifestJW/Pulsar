@@ -1,7 +1,6 @@
 #include <PulsarSystem.hpp>
 #include <UI/CtrlRaceBase/InfoDisplay.hpp>
 #include <SlotExpansion/UI/ExpansionUIMisc.hpp>
-#include <SlotExpansion/CupsConfig.hpp>
 
 
 namespace Pulsar {
@@ -10,11 +9,10 @@ namespace UI {
 u32 CtrlRaceTrackInfoDisplay::lastCourse = -1;
 
 u32 CtrlRaceTrackInfoDisplay::Count() {
-    const u32 gamemode = Racedata::sInstance->racesScenario.settings.gamemode;
+    const u32 gamemode = RaceData::sInstance->racesScenario.settings.gamemode;
     if((gamemode == MODE_GRAND_PRIX) || (gamemode == MODE_VS_RACE) || (gamemode == MODE_PUBLIC_VS) || (gamemode == MODE_PRIVATE_VS)) return 1;
-    const PulsarId winning = CupsConfig::sInstance->GetWinning();
-    if(gamemode == MODE_TIME_TRIAL && winning != lastCourse) {
-        lastCourse = winning;
+    if(gamemode == MODE_TIME_TRIAL && CupsConfig::sInstance->winningCourse != lastCourse) {
+        lastCourse = CupsConfig::sInstance->winningCourse;
         return 1;
     }
     return 0;

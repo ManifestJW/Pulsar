@@ -30,9 +30,9 @@ namespace Pulsar_Pack_Creator
             {
                 int row = Grid.GetRow(box) - 1;
                 int col = Grid.GetColumn(box) - 1;
-                string oldText = cups[curCup].tracks[row].expertFileNames[col];
+                string oldText = cups[curCup].expertFileNames[row, col];
                 string text = box.Text;
-                cups[curCup].tracks[row].expertFileNames[col] = text;
+                cups[curCup].expertFileNames[row, col] = text;
                 if (text != "RKG File" && text != "" && (oldText == "RKG File" || oldText == ""))
                 {
                     trophyCount[col]++;

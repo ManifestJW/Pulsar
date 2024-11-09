@@ -14,18 +14,17 @@ public:
     ~FriendButton() override; //805d3850 vtable 808b8d04
     void InitSelf() override; //0x18 805d3c54
     void OnUpdate() override; //0x1c 805d3c58
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x28 805d7de4
+    int GetRuntimeTypeInfo() const override; //0x28 805d7de4
     const char* GetClassName() const override; //0x2c 805d3800
-    void OnSelect(u32 hudSlotId, u32 r5) override; //0x40 805d4028
-    void OnDeselect(u32 hudSlotId, u32 r5) override; //0x44 805d4120
+    void OnSelect() override; //0x40 805d4028
+    void OnDeselect() override; //0x44 805d4120
 
     void Load(u32 id, MiiGroup* miiGroup); //805d38a8 inlined
     void SetMii(u32 friendIdx); //805d3980
 
     MiiGroup* miiGroup; //0x254
     u32 friendIdx; //0x258
-    u32 status; //0x25c 
-    //0 = nothing?, 1 = added but no mii, 2 = disconnected, 3 = online, 4 = public, 5 = froomhost
+    u32 status; //0x25c 2 = has friend loaded? unsure
     bool isSelected; //0x260
     u8 padding[3];
 };
@@ -36,9 +35,9 @@ public:
     JoinFriendButton(); //805d5510 inlined
     ~JoinFriendButton() override; //805d554c vtable 808b8c0c
     void OnUpdate() override; //0x1c 805d5818
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x28 805d7dc4
+    int GetRuntimeTypeInfo() const override; //0x28 805d7dc4
     const char* GetClassName() const override; //0x2c 805d5500
-    void SetStatus(u32 status); //805d56ac
+    void Toggle(u32 enabled); //805d56ac
 };
 size_assert(JoinFriendButton, 0x254);
 
@@ -56,7 +55,7 @@ public:
     void BeforeEntranceAnimations() override; //0x38 805d4a54
     void BeforeExitAnimations() override; //0x40 805d4b5c
     void AfterControlUpdate() override; //0x4c 805d4c10
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 805d7dd8
+    int GetRuntimeTypeInfo() const override; //0x60 805d7dd8
 
     void AddNewFriend(u32 idx); //805d4c8c adds mii inlined
     void OnFriendButtonClick(FriendButton& friendButton, u32 hudSlotId); //805d4d08
@@ -76,7 +75,7 @@ public:
     SheetSelectControl arrows; //0x1234
     LayoutUIControl pageCounter; //0x176c
     MiiGroup miiGroup; //0x18e0
-    u32 sortedFriendsIdx[30]; //0x1978
+    u32 sortedFriendsIdx[32]; //0x1978
     u8 unknown_0x19f0[0x4];
     u32 curPageIdx; //0x19f4
     u32 updateFrequency; //0x19f8 every 300 frames, updates the list, which is useful for newly registered friends
@@ -98,7 +97,7 @@ public:
     void OnInit() override; //0x28 805d5af4
     void OnActivate() override; //0x30 805d6000
     void AfterControlUpdate() override; //0x4c 805d6128
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 805d7db8
+    int GetRuntimeTypeInfo() const override; //0x60 805d7db8
 
     void PlaySound(u32 friendStatus); //805d6390
     void SetInfoText(MiiGroup& miiGroup, u32 friendIdx); //805d6470
@@ -138,7 +137,7 @@ public:
     void OnActivate() override; //0x30 805d6d40
     void OnDeactivate() override; //0x34 805d6e10
     void OnResume() override; //0x54 805d6ec8
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 805d7da4
+    int GetRuntimeTypeInfo() const override; //0x60 805d7da4
 
     void OnRemoveButtonClick(PushButton& button, u32 hudSlotId);  //805d6f9c
     void OnCancelAndBackButtonClick(PushButton& button, u32 hudSlotId);  //805d7190
@@ -174,7 +173,7 @@ public:
     void OnActivate() override; //0x30 805d7404
     void BeforeExitAnimations(); //0x40 805d74f4
     void AfterControlUpdate(); //0x4c 805d7658
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 805d7d90
+    int GetRuntimeTypeInfo() const override; //0x60 805d7d90
 
     ManipulatorManager manipulatorManager;
     CtrlMenuPageTitleText titleText;

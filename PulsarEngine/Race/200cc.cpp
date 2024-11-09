@@ -1,9 +1,13 @@
 #include <kamek.hpp>
+#include <MarioKartWii/Input/InputManager.hpp>
 #include <MarioKartWii/Kart/KartManager.hpp>
 #include <MarioKartWii/Effect/EffectMgr.hpp> 
-#include <MarioKartWii/UI/Section/SectionMgr.hpp>
+#include <MarioKartWii/UI/SectionMgr/SectionMgr.hpp>
+#include <MarioKartWii/Item/Obj/ItemObj.hpp>
+#include <MarioKartWii/KMP/KMPManager.hpp>
+#include <MarioKartWii/Race/RaceData.hpp>
 #include <Race/200ccParams.hpp>
-#include <PulsarSystem.hpp>
+
 
 //Unoptimized code which is mostly a port of Stebler's version which itself comes from CTGP's, speed factor is in the LapSpeedModifier code
 
@@ -11,8 +15,11 @@
 namespace Pulsar {
 namespace Race {
 
+
+
+//kmWrite32(0x805850c4, 0x7FC3F378); //to get kartMovement
 static void CannonExitSpeed() {
-    const float ratio = System::sInstance->IsContext(PULSAR_200) ? cannonExit : 1.0f;
+    const float ratio = Info::Is200cc() ? cannonExit : 1.0f;
     register Kart::Movement* kartMovement;
     asm(mr kartMovement, r30;);
     kartMovement->engineSpeed = kartMovement->baseSpeed * ratio;
@@ -20,7 +27,7 @@ static void CannonExitSpeed() {
 kmCall(0x805850c8, CannonExitSpeed);
 
 void EnableBrakeDrifting(Input::ControllerHolder& controllerHolder) {
-    if(System::sInstance->IsContext(PULSAR_200)) {
+    if(Info::Is200cc()) {
         const ControllerType controllerType = controllerHolder.curController->GetType();
         const u16 inputs = controllerHolder.inputStates[0].buttonRaw;
         u16 inputsMask = 0x700;
@@ -60,7 +67,7 @@ kmCall(0x80521828, FixGhostBrakeDrifting);
 
 
 bool IsBrakeDrifting(const Kart::Status& status) {
-    if(System::sInstance->IsContext(PULSAR_200)) {
+    if(Info::Is200cc()) {
         u32 bitfield0 = status.bitfield0;
         const Input::ControllerHolder& controllerHolder = status.link->GetControllerHolder();
         if((bitfield0 & 0x40000) != 0 && (bitfield0 & 0x1F) == 0xF && (bitfield0 & 0x80100000) == 0
@@ -73,7 +80,7 @@ bool IsBrakeDrifting(const Kart::Status& status) {
 
 void BrakeDriftingAcceleration(Kart::Movement& movement) {
     movement.UpdateKartSpeed();
-    if(IsBrakeDrifting(*movement.pointers->kartStatus)) movement.acceleration = brakeDriftingDeceleration; //JUMP_PAD|RAMP_BOOST|BOOST
+    if(IsBrakeDrifting(*movement.link.pointers->kartStatus)) movement.acceleration = brakeDriftingDeceleration; //JUMP_PAD|RAMP_BOOST|BOOST
 }
 kmCall(0x80579910, BrakeDriftingAcceleration);
 
@@ -103,8 +110,8 @@ kmCall(0x806faff8, BrakeDriftingSoundWrapper);
 kmWrite32(0x80698f88, 0x60000000);
 static int BrakeEffectBikes(Effects::Player& effects) {
     const Kart::Player* kartPlayer = effects.kartPlayer;
-    if(System::sInstance->IsContext(PULSAR_200)) {
-        if(IsBrakeDrifting(*kartPlayer->pointers.kartStatus)) effects.CreateAndUpdateEffectsByIdxVelocity(effects.bikeDriftEffects, 25, 26, 1);
+    if(Info::Is200cc()) {
+        if(IsBrakeDrifting(*kartPlayer->link.pointers->kartStatus)) effects.CreateAndUpdateEffectsByIdxVelocity(effects.bikeDriftEffects, 25, 26, 1);
         else effects.FollowFadeEffectsByIdxVelocity(effects.bikeDriftEffects, 25, 26, 1);
     }
     return kartPlayer->GetDriftState();
@@ -114,8 +121,8 @@ kmCall(0x80698f8c, BrakeEffectBikes);
 kmWrite32(0x80698048, 0x60000000);
 static int BrakeEffectKarts(Effects::Player& effects) {
     Kart::Player* kartPlayer = effects.kartPlayer;
-    if(System::sInstance->IsContext(PULSAR_200)) {
-        if(IsBrakeDrifting(*kartPlayer->pointers.kartStatus)) effects.CreateAndUpdateEffectsByIdxVelocity(effects.kartDriftEffects, 34, 36, 1);
+    if(Info::Is200cc()) {
+        if(IsBrakeDrifting(*kartPlayer->link.pointers->kartStatus)) effects.CreateAndUpdateEffectsByIdxVelocity(effects.kartDriftEffects, 34, 36, 1);
         else effects.FollowFadeEffectsByIdxVelocity(effects.kartDriftEffects, 34, 36, 1);
     }
     return kartPlayer->GetDriftState();
@@ -124,7 +131,7 @@ kmCall(0x8069804c, BrakeEffectKarts);
 
 
 static void FastFallingBody(Kart::Status& status, Kart::Physics& physics) { //weird thing 0x96 padding byte used
-    if(System::sInstance->IsContext(PULSAR_200)) {
+    if(Info::Is200cc()) {
         if((status.airtime >= 2) && (!status.bool_0x96 || (status.airtime > 19))) {
             Input::ControllerHolder& controllerHolder = status.link->GetControllerHolder();
             float input = controllerHolder.inputStates[0].stick.z <= 0.0f ? 0.0f :
@@ -140,18 +147,18 @@ kmCall(0x805967a4, FastFallingBody);
 kmWrite32(0x8059739c, 0x38A10014); //addi r5, sp, 0x14 to align with the Vec3 on the stack
 static Kart::WheelPhysicsHolder& FastFallingWheels(Kart::Sub& sub, u8 wheelIdx, Vec3& gravityVector) { //weird thing 0x96 status
     float gravity = -1.3f;
-    if(System::sInstance->IsContext(PULSAR_200)) {
+    if(Info::Is200cc()) {
         Kart::Status* status = sub.kartStatus;
         if(status->airtime == 0) status->bool_0x96 = ((status->bitfield0 & 0x80) != 0) ? true : false;
         else if((status->airtime >= 2) && (!status->bool_0x96 || (status->airtime > 19))) {
-            Input::ControllerHolder& controllerHolder = sub.GetControllerHolder();
+            Input::ControllerHolder& controllerHolder = sub.link.GetControllerHolder();
             float input = controllerHolder.inputStates[0].stick.z <= 0.0f ? 0.0f
                 : (controllerHolder.inputStates[0].stick.z + controllerHolder.inputStates[0].stick.z);
             gravity *= (input * fastFallingWheelGravity + 1.0f);
         }
     }
     gravityVector.y = gravity;
-    return sub.GetWheelPhysicsHolder(wheelIdx);
+    return sub.link.GetWheelPhysicsHolder(wheelIdx);
 };
 kmCall(0x805973a4, FastFallingWheels);
 }//namespace Race

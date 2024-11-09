@@ -1,6 +1,8 @@
-#include <MarioKartWii/RKNet/RKNetController.hpp>
-#include <MarioKartWii/RKNet/SELECT.hpp>
+#include <MarioKartWii/UI/Page/Menu/MiiSelect.hpp>
+#include <MarioKartWii/UI/SectionMgr/SectionMgr.hpp>
 #include <MarioKartWii/UI/Page/Other/FriendRoom.hpp>
+#include <MarioKartWii/RKNet/RKNetController.hpp>
+#include <core/System/SystemManager.hpp>
 #include <UI/TeamSelect/TeamSelect.hpp>
 #include <UI/UI.hpp>
 
@@ -72,15 +74,15 @@ void TeamSelect::OnInit() {
 void TeamSelect::BeforeEntranceAnimations() {
     Pages::Menu::BeforeEntranceAnimations();
     if(this->toggle.GetState() != this->isEnabled) this->toggle.ToggleState(this->isEnabled);
-    this->toggle.SelectInitial(0);
+    this->toggle.SelectInitialButton(0);
     const u32 bmgId = this->toggle.GetState() == false ? BMG_TEAMS_DISABLED : BMG_TEAMS_ENABLED;
     this->toggle.SetMessage(bmgId);
     this->isLocked = false;
 
-    for(int idx = 0; idx < 12; ++idx) {
+    for(int idx = 0; idx < 12; idx++) {
         this->miis[idx].animator.GetAnimationGroupById(0).PlayAnimationAtFrameAndDisable(0, 0.0f);
     }
-    for(u8 teamsArrayIdx = 0; teamsArrayIdx < 24; ++teamsArrayIdx) {
+    for(u8 teamsArrayIdx = 0; teamsArrayIdx < 24; teamsArrayIdx++) {
         u32 idx = this->CalcIdx(teamsArrayIdx);
         u8 curTeam = 0;
         if(idx != 0xFF) {
@@ -101,7 +103,7 @@ void TeamSelect::BeforeControlUpdate() {
     int idx = 0;
     for(int aid = 0; aid < 12; ++aid) {
         if(sub->availableAids & (1 << aid)) {
-            for(int player = 0; player < sub->connectionUserDatas[aid].playersAtConsole; ++player) {
+            for(int player = 0; player < sub->connectionUserDatas[aid].playersAtConsole; player++) {
                 LayoutUIControl& mii = this->miis[idx];
                 mii.SetMiiPane("chara", *this->miiGroup, aid * 2 + player, 2);
                 mii.SetMiiPane("chara_shadow", *this->miiGroup, aid * 2 + player, 2);
@@ -122,7 +124,7 @@ void TeamSelect::BeforeControlUpdate() {
             }
         }
     }
-    for(int remIdx = idx; remIdx < 12; ++remIdx) {
+    for(int remIdx = idx; remIdx < 12; remIdx++) {
 
         this->miis[remIdx].isHidden = true;
         this->arrows[remIdx].isHidden = true;
@@ -171,7 +173,7 @@ UIControl* TeamSelect::CreateControl(u32 id) {
 }
 
 void TeamSelect::OnArrowClick(PushButton& button, u32 hudSlotId) {
-    const s32 id = button.buttonId;
+    const u32 id = button.buttonId;
     u8 teamsArrayIdx = this->CalcTeamsArrayIdx(id);
     if(teamsArrayIdx != 0xFF) {
         const u8 newTeam = TeamSelect::teams[teamsArrayIdx] ^ 1;
@@ -220,7 +222,7 @@ void TeamSelect::OnBackPress(u32 hudSlotId) {
 }
 
 void TeamSelect::OnButtonClick(PushButton& button, u32 hudSlotId) {
-    this->EndStateAnimated(1, button.GetAnimationFrameSize());
+    this->EndStateAnimated(button.GetAnimationFrameSize(), 1);
 }
 
 u8 TeamSelect::CalcTeamsArrayIdx(u32 idx) {
@@ -231,7 +233,7 @@ u8 TeamSelect::CalcTeamsArrayIdx(u32 idx) {
     u32 curIdx = 0;
     for(u8 curAid = 0; curAid < 12; ++curAid) {
         if(sub->availableAids & (1 << curAid)) {
-            for(int player = 0; player < sub->connectionUserDatas[curAid].playersAtConsole; ++player) {
+            for(int player = 0; player < sub->connectionUserDatas[curAid].playersAtConsole; player++) {
                 if(curIdx == idx) return curAid + 12 * player;
                 ++curIdx;
             }
@@ -253,7 +255,7 @@ u32 TeamSelect::CalcIdx(u8 teamsArrayIdx) {
     u32 idx = 0;
     for(u8 curAid = 0; curAid < aid; ++curAid) {
         if(sub->availableAids & (1 << curAid)) {
-            for(int player = 0; player < sub->connectionUserDatas[curAid].playersAtConsole; ++player) ++idx;
+            for(int player = 0; player < sub->connectionUserDatas[curAid].playersAtConsole; player++) ++idx;
         }
     }
     return isGuest ? idx + 1 : idx;
@@ -321,29 +323,5 @@ void TeamSelect::SetColours(u32 idx, u8 team) {
     miiBorder->tevColours[1].a = 255;
 }
 
-//Sets Team using the TeamSelectPage if it has been enabled by the host; verifies the validity of the teams
-static void SetTeams(RKNet::SELECTHandler* handler, u32& teams) {
-    const RKNet::Controller* controller = RKNet::Controller::sInstance;
-    const RKNet::ControllerSub* sub = &controller->subs[0];
-    if(sub->connectionUserDatas[0].playersAtConsole == 0) sub = &controller->subs[1];
-
-    bool isValid = false;
-    Team firstTeam = UI::TeamSelect::GetPlayerTeam(0); //guaranteed to exist since a room always has aid0
-    if((handler->mode == RKNet::ONLINEMODE_PRIVATE_VS || handler->mode == RKNet::ONLINEMODE_PRIVATE_BATTLE)
-        && UI::TeamSelect::isEnabled) {
-
-        for(int aid = 0; aid < sub->playerCount; ++aid) {
-            if(sub->availableAids & (1 << aid)) {
-                for(int player = 0; player < sub->connectionUserDatas[aid].playersAtConsole; ++player) {
-                    Team curSlotTeam = UI::TeamSelect::GetPlayerTeam(aid + 12 * player);
-                    if(curSlotTeam != firstTeam) isValid = true;
-                    teams = teams | (curSlotTeam & 1) << (aid * 2 + player);
-                }
-            }
-        }
-    }
-    if(!isValid) handler->DecidePrivateTeams(teams);
-}
-kmCall(0x806619d8, SetTeams);
 }//namespace UI
 }//namespace Pulsar

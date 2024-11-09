@@ -3,7 +3,6 @@
 #include <types.hpp>
 #include <core/nw4r/ef/res/Resource.hpp>
 #include <core/nw4r/ef/res/ResTexture.hpp>
-#include <core/nw4r/ef/res/ResAnimCurve.hpp>
 
 namespace nw4r {
 namespace ef {
@@ -133,13 +132,10 @@ struct ParticleParameterDesc {
 struct EmitterResource {
     char* name;
     u32 headersize;
-
-    //lwzu 8 + 4 + lwz 4 = GetPtclTrack(i), which is a animCurveData used for ResAnimCurve
 };
 
 class ResEmitter {
 public:
-    ResAnimCurve GetEmitTrack(u16 num); //8004bc80 often inlinted in egg
     EmitterResource* data;
 };
 

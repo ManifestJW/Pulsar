@@ -1,7 +1,7 @@
 #ifndef _KMPCONTROLLER_
 #define _KMPCONTROLLER_
 #include <kamek.hpp>
-#include <MarioKartWii/Archive/ArchiveMgr.hpp>
+#include <MarioKartWii/Archive/ArchiveRoot.hpp>
 #include <MarioKartWii/KMP/KMP.hpp>
 
 /*
@@ -39,7 +39,7 @@ template<>
 class Holder<KTPT> {
 public:
     void InitLinks(); //805148a0
-    void CalcCoordinates_0Indexed(Vec3& position, Vec3& rotation, u32 playerPosition, u32 playerCount); //80514368
+    void CalcCoordinates_0Indexed(Vec3& position, Vec3& rotation, u32 playerPosition, u32 playerCount);
     void CalcCoordinates(Vec3& position, Vec3& rotation, u32 playerPosition, u32 playerCount); //80514b24
     KTPT* raw;
     u8 enemyLink; //0x4
@@ -50,7 +50,6 @@ template<>
 class Holder<ENPH> {
 public:
     void CalcExtremes(); //80514c30
-    void ToggleENPHLink(u8 enphId, bool isActivated); //80517858 edits the links to remove/insert the enph
     ENPH* raw;
     float lowestENPT;
     float highestENPT;
@@ -105,7 +104,7 @@ struct LinkedCKPT {
     Vec2 firstPointDiff;
     Vec2 secondPointDiff;
     float distance;
-}; //0x18
+};
 
 class CKPTSection;
 template<>
@@ -113,13 +112,12 @@ class Holder<CKPT> {
 public:
     Holder(const CKPT& raw); //805154e4
     void InitLinks(CKPTSection& section, u16 id); //80515624
-    void InitType(u8 type); //80515a6c recursive
     void SetTypeRecursive(u8 type); //80515a6c
     u32 CalcCompletion(const Vec3& playerPosition, Vec3& completion); //80510d7c fills completion
     u32 CalcExactFinishTime(const Vec2& playerPos, const Vec2& prevPlayerPos); //80511ec8 returns ms
 
     CKPT* raw;
-    u16 nextCKPTCount; //0x4
+    u16 nextCKTPTCount; //0x4
     u16 prevCKPTCount; //0x6
     Vec2 midPoint; //0x8
     float boxProportions[2]; //0x10
@@ -127,16 +125,15 @@ public:
     s16 id; //0x1a
     u8 type; //0x1c
     u8 unknown_0x1D[3]; //0x1d
-    Holder* prevHolders[6]; //0x20
-    LinkedCKPT next[6]; //0x38
-}; //0xc8
+    Holder* prevHolders[6];
+    LinkedCKPT next[6]; //0x20
+};
 
 template<>
 class Holder<AREA> {
 public:
-    Holder(AREA* raw); //80516050
-    ~Holder(); //805163b4
-    virtual bool IsPointInAREAShape(const Vec3& subjectPosition) = 0; //vtable 808b2c60
+    Holder<AREA>(AREA* raw); //80516220
+    virtual bool IsPointInAREAShape(const Vec3& subjectPosition); //805163f4 vtable 808b2c54
     bool IsPointInAREA(const Vec3& position); //805160b0 calls func above + a distance check
     void SetId(u16 id); //80512cac
     s8 GetRouteId(); //80516138
@@ -152,18 +149,6 @@ public:
     float radius; //0x40
     u16 id;
     u8 unknown_0x46[0x48 - 0x46];
-};
-
-class HolderAREABox : public Holder<AREA> {
-public:
-    HolderAREABox(AREA* raw); //80516220
-    virtual bool IsPointInAREAShape(const Vec3& subjectPosition); //805163f4 vtable 808b2c54
-}; //total size 0x48
-
-class HolderAREACylinder : public Holder<AREA> {
-public:
-    HolderAREACylinder(AREA* raw); //805164fc
-    virtual bool IsPointInAREAShape(const Vec3& subjectPosition); //80516688 vtable 808b2c48
 }; //total size 0x48
 
 template<>
@@ -193,12 +178,12 @@ public:
 };
 
 template<>
-class Holder<STGI> { //what the wiki calls LensFlare, but isn't actually LensFlare per se
+class Holder<STGI> {
 public:
     bool IsNarrowGrid() const; //80512d40
-    u32 GetFilterEffectColor() const; //80512d4c
-    u8 GetFilterEffectAlpha() const; //80518bb0
-    bool HasFilterEffect() const; //80512d58
+    u32 GetLensFlareColor() const; //80512d4c
+    u8 GetLensFlareAlpha() const; //80518bb0
+    bool HasLensFlare() const; //80512d58
     STGI* raw;
 };
 
@@ -333,8 +318,8 @@ public:
     Holder<CKPH>* GetCKPHHolderByCP(u16 cpIdx); //80515cbc
 
     Holder<AREA>* GetAREAHolderByPriority(u8 priority) const; //805167b4
-    s16 FindAREA(const Vec3& position, u32 areaIdToTestFirst, u8 areaType); //80516808 if areaIdToTest is not -1, will test it first
-    bool GetMiniMapAREAParams(Vec3& bottomleft, Vec3& topRight); //80516a60
+    s16 FindAREA(const Vec& position, u32 areaIdToTestFirst, u8 areaType); //80516808 if areaIdToTest is not -1, will test it first
+    bool GetMiniMapAREAParams(Vec3& bottomleft, Vec& topRight); //80516a60
     Holder<CAME>* GetCAMEHolderFromAREAId(u16 areaIdx); //80516bfc
 
     s8 GetNextENPTCount(const u8& curENPT); //8051760c
@@ -393,7 +378,6 @@ public:
 };
 size_assert(Manager, 0x54);
 
-bool IsNonPrivateBattle(); //80516d4c
 
 }//namespace KMP
 

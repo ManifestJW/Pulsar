@@ -23,6 +23,7 @@ public:
         this->onTeamsClickHandler.ptmf = &ExpFroom::OnTeamsButtonClick;
         this->onButtonSelectHandler.ptmf = &ExpFroom::ExtOnButtonSelect;
     }
+    void Test();
     void OnInit() override;
     void AfterControlUpdate() override;
     void OnResume() override;
@@ -38,7 +39,7 @@ private:
     PushButton teamsButton;
     bool areControlsHidden;
 public:
-    PulPageId topSettingsPage;
+    PageId topSettingsPage;
 };
 }//namespace UI
 }//namespace Pulsar

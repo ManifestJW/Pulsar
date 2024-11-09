@@ -3,10 +3,13 @@
 #include <kamek.hpp>
 #include <core/egg/mem/Disposer.hpp>
 #include <MarioKartWii/3D/Camera/Camera.hpp>
-#include <MarioKartWii/3D/Camera/RaceCamera.hpp>
-#include <MarioKartWii/3D/GameScreenEffects/GameScreenEffects.hpp>
 
-class ClipInfo;
+
+class RaceCamMgrSub30 {
+    RaceCamMgrSub30(u32 screenCount); //8054eb54
+    virtual ~RaceCamMgrSub30(); //8054f120 vtable 808b3e04
+    u8 _[0x18];
+}; //0x1c
 
 class CameraMgr {
 public:
@@ -43,7 +46,7 @@ public:
     u16 unknown_0x2a[2];
     u8 padding[2]; //0x2e
 
-    GameScreenEffectsMgr* gameScreenEffectsMgr; //0x30
+    RaceCamMgrSub30* sub30; //0x30
     BCP* rawBCP; //0x34
 
 }; //0x38

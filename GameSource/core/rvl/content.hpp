@@ -6,7 +6,7 @@
 
 namespace CNT {
 struct HandleNAND {
-    ARC::Handle arcHandle;
+    ARCHandle arcHandle;
     s32 fd;
     MEM::Allocator* allocator;
 };

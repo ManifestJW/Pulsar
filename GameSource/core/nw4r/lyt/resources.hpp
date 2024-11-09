@@ -34,7 +34,7 @@ struct Layout {
     DataBlockHeader blockHeader; //lyt1
     u8              originType;
     u8              padding[3];
-    math::VEC2      size;
+    Vec2            size;
 };
 
 struct ExtUserDataList {
@@ -134,7 +134,7 @@ struct Pane { //https://wiki.tockdom.com/wiki/BRLYT_(File_Format)#pan1
     char userInfo[0x8];
     math::VEC3 translation; //0x24
     math::VEC3 rotation; //0x30
-    math::VEC2 scale; //0x3c
+    Vec2 scale; //0x3c
     float width;
     float height;
 }; //0x4C
@@ -157,7 +157,7 @@ struct TextBox : Pane { //txt1
     u32 textOffset;
     u32 topColour;
     u32 bottomColour;
-    math::VEC2 fontSize;
+    Vec2 fontSize;
     float characterSpace;
     float lineSpace;
 };
@@ -222,7 +222,7 @@ struct AnimationInfo {
     u32 kind; //RLPA, RLTS etc...
     u8 targetCount;
     u8 padding[3];
-    //u32 animTargetOffsets[num]; //0x8
+    //u32 animTargetOffsets[num];
 };
 
 struct AnimationTarget {
@@ -248,15 +248,6 @@ struct StepKey {
     u16 padding;
 };
 
-enum AnimationType {
-    ANIMATIONTYPE_RLPA = 'RLPA',
-    ANIMATIONTYPE_RLVI = 'RLVI',
-    ANIMATIONTYPE_RLVC = 'RLVC',
-    ANIMATIONTYPE_RLMC = 'RLMC',
-    ANIMATIONTYPE_RLTS = 'RLTS',
-    ANIMATIONTYPE_RLTP = 'RLTP',
-    ANIMATIONTYPE_RLIM = 'RLIM',
-};
 
 }//namespace res
 }//namespace lyt

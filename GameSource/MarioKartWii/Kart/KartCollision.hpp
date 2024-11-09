@@ -11,25 +11,15 @@ namespace Kart {
 class Player;
 class Pointers;
 
-//ParameterFile size is 0x1c, Racedata's is /boot/menuset.prm
-class EmptyCollisionParent {
-public:
-    virtual void ProcessKartBodyCollision(CollisionData& collisionData, Hitbox& hitbox,
-        void* unk, const KCLTypeHolder& kclFlags) = 0; //vtable 808b56c0
-    virtual void ProcessWheelCollision(CollisionData& collisionData, Hitbox& hitbox,
-        void* unk, const KCLTypeHolder& kclFlags) = 0;
-    virtual ~EmptyCollisionParent() = 0; //80573ff0
-};
-
-class Collision : public EmptyCollisionParent, public Link {
+class Collision {
 public:
     Collision(); //8056e56c
 
-    void ProcessKartBodyCollision(CollisionData& collisionData, Hitbox& hitbox,
-        void* unk, const KCLTypeHolder& kclFlags) override; //8056e764 vtable 808b56a8
-    void ProcessWheelCollision(CollisionData& collisionData, Hitbox& hitbox,
-        void* unk, const KCLTypeHolder& kclFlags) override; //8056e8d4
-    ~Collision() override; //80573ff0
+    virtual void ProcessKartBodyCollision(CollisionData& collisionData, Hitbox& hitbox,
+        void* unk, const KCLTypeHolder& kclFlags); //8056e764 vtable 808b56a8
+    virtual void ProcessWheelCollision(CollisionData& collisionData, Hitbox& hitbox,
+        void* unk, const KCLTypeHolder& kclFlags); //8056e8d4
+    virtual ~Collision(); //80573ff0
 
 
     void Reset(); //8056e624
@@ -52,12 +42,12 @@ public:
     void ActivateOob(bool detachCamera, KCLTypeHolder* flags, bool isCPU, int isInBullet); //80573b00
     void UpdateRespawn(); //80573ed4
     void UpdateCollisionsInner(u32 playerIdx, Physics& kartPhysics, HitboxGroup* hitboxGroup,
-        Quat* rotation, const Vec3& scale, bool enableHwg, Vec3* unk2, float unk0, float unk1); //805b6724 everything but the wheels, ie the body
+        Quat* rotation, const Vec3& scale, bool enableHwg, Vec3* unk2, float unk0, float unk1); //805b6724
     void UpdateWheelCollision(u8 playerIdx, u32 wheelIdx, Physics& kartPhysics, HitboxGroup* hitboxGroup, Vec3* unk_0x48,
         Vec3* center, float radius); //805b6f4c
     void ProcessTriggers(const KCLTypeHolder& kclFlags); //8056f510
 
-    Kart::Link link; //0x4
+    Link link;
     u8 unknown_0x10[4];
     float triggersCollisionRadius; //0x14
     u8 unknown_0x18[0x2c - 0x18];

@@ -11,6 +11,9 @@
 
 namespace RKNet {
 
+
+
+
 class PacketMgr {
 public:
     static PacketMgr* sInstance; //809c1f50
@@ -30,7 +33,7 @@ public:
 
     void ProcessPlayerDC(u32 dcedAid); //80653ddc
 
-    void UpdateAsRacer(); //80653f24 inlined in update
+    void UpdateAsRacer(); //80653f24
     void UpdateAsSpectator(); //80654150
     bool EveryoneIsConnected(); //80654038 Controller's IsConnectedToAnyone OR raceInfo stateflag of a player has 0x10 (dced)
     u32 GetPlayerRH1Timer(u32 playerId) const; //806544a8
@@ -46,7 +49,7 @@ public:
     bool IsPlayerConnected(u32 playerId) const; //80654820
     bool IsPlayerLocal(u32 playerId) const; //806548a8
     u32 GetHudSlotId(u32 playerId) const; //80654918
-    void UpdateRaceinfoConnectionStatus(); //80654984
+    void UpdateRaceInfoConnectionStatus(); //80654984
     void ProcessLagFrames(); //80654b00
     void CreateAndExportRH1andUSER(); //80655164
     void CreateRH1AndExportRH1andUSERandRACEDATA(); //80654d08
@@ -61,7 +64,7 @@ public:
     u32 aidsWithNewROOMorSELECT;
     u32 unknown_0xC;
     u16 localLagFrames;
-    u16 countdownTime; //0x12
+    u16 countdownTime;
     RACEDATAPacket sendRACEDATABuffers[2]; //0x14
     EVENTPacket sendEVENTBuffer; //0x94
     u8 unknown_0x18c[4];

@@ -3,7 +3,7 @@ Raceinfo is a class that stores various information about the race and players, 
 
 Contributors:
   Seeky (main documentation)
-  _tZ (RaceinfoPlayer attributes)
+  _tZ (RaceInfoPlayer attributes)
   Kevin (various attributes)
   Leseratte (race finish time attributes)
   stebler (intro timer attribute)
@@ -14,20 +14,17 @@ Contributors:
 #define _RACEINFO_
 #include <kamek.hpp>
 #include <MarioKartWii/File/KMG.hpp>
-#include <MarioKartWii/System/BitRotator.hpp>
 #include <MarioKartWii/System/Timer.hpp>
 #include <MarioKartWii/System/ElineManager.hpp>
 #include <MarioKartWii/System/Random.hpp>
 #include <MarioKartWii/Input/ControllerHolder.hpp>
-#include <MarioKartWii/Race/Racedata.hpp>
-#include <MarioKartWii/Race/Raceinfo/GameModeData.hpp>
+#include <MarioKartWii/Race/RaceData.hpp>
+#include <MarioKartWii/Race/RaceInfo/GameModeData.hpp>
 
 enum RaceStage {
     RACESTAGE_INTRO,
     RACESTAGE_COUNTDOWN,
-    RACESTAGE_RACE,
-    RACESTAGE_IS_FINISHING, //held for 1 frame
-    RACESTAGE_FINISHED
+    RACESTAGE_RACE
 };
 
 class KMGHolder {
@@ -55,11 +52,10 @@ public:
     u8 unknown_0x40[0x50 - 0x40];
 }; //Total size 0x50
 
-class RaceinfoPlayer {
+class RaceInfoPlayer {
 public:
-    RaceinfoPlayer(u8 id, u8 lapCount); //80533ed8
-    virtual ~RaceinfoPlayer(); //80532f48 vtable 808b34a4
-    void Init(); //80534194
+    RaceInfoPlayer(u8 id, u8 lapCount); //80533ed8
+    virtual ~RaceInfoPlayer(); //80532f48 vtable 808b34a4
     u8 UpdateGPHiddenScore(); //805368f8
     void FillTimerWithSplits(u8 lap, Timer* timer); //8053572c
     void UpdateRealLocal(); //805342e8 inlined
@@ -105,23 +101,22 @@ public:
     Input::RealControllerHolder* realControllerHolder; //0x48
     u8 unknown_0x4c[0x54 - 0x4c];
 }; //Total size 0x54
-size_assert(RaceinfoPlayer, 0x54);
+size_assert(RaceInfoPlayer, 0x54);
 
-class Raceinfo {
+class RaceInfo {
 public:
-
-    static Raceinfo* sInstance; //809bd730
-    static Raceinfo* CreateInstance(); //80532084
+    static RaceInfo* sInstance; //809bd730
+    static RaceInfo* CreateInstance(); //80532084
     static void DestroyInstance(); //805320d4
 
-    Raceinfo(); //805327a0
-    virtual ~Raceinfo(); //80532e3c vtable 808b3350
+    RaceInfo(); //805327a0
+    virtual ~RaceInfo(); //80532e3c vtable 808b3350
     GMData* CreateGMData(GameMode gamemode); //80532188
     void Init(); //80532f88
     void Update(); //805331b4
     u8 GetLapCount(); //805336a4
     void SetPlayerDisconnected(u8 playerId); //80533d84 used if a player is disconnected
-    bool IsAtLeastStage(RaceStage stage) const; //80536230
+    bool IsAtLeastStage(RaceStage stage); //80536230
     bool CanRaceEnd(); //80536208
     const KMP::Holder<JGPT>* GetJGPTHolder(u8 playerId); //8053621c just wraps around GMData's virtual func
     const KMP::Holder<KTPT>* GetKTPTHolder(u8 playerId); //805365c8
@@ -132,11 +127,10 @@ public:
     void ComputeDelfinoPierTideState(); //805330c0 inlined
     void CloneTimer(Timer* dest); //80535ca0
     void EndPlayerRace(u8 playerId); //80533c6c
-    void CheckEndRaceOnline(u8 playerId); //80533dd4
 
     Random* random;
     Random* onlineAndTTRandom;
-    RaceinfoPlayer** players; //pointer to an array of pointers, length is player count
+    RaceInfoPlayer** players; //pointer to an array of pointers, length is player count
     GMData* gamemodeData; //0x10
     RaceTimerMgr* timerMgr; //0x14
     u8* playerIdInEachPosition; //0x18 pointer to an array of player ids, 0 is the id in 1st, 1 is 2nd...
@@ -149,18 +143,16 @@ public:
     RaceStage stage; //0x28
     u8 unknown_0x2c; //0x2c
     bool isSpectating; //0x2d
-    bool canCountdownStart; //0x2e instantly true offline, needs syncing online
+    bool canCountdownStart; //instantly true offline, needs syncing online
     bool cutSectionMode; //true for modes 11 & 12
-    bool unknown_0x30;
-    u8 padding2[3];
-    BitRotator bitRotator; //0x34
+    u8 unknown_0x30[0x3c - 0x30];
     KMGHolder* kmg; //0x3c
-    ElineMgr* elineManager; //0x40
+    ElineManager* elineManager; //0x40
     float unknown_0x44;
     bool isDelfinoPierTideLow; //0x48 unsure
     u8 unknown_0x49[3];
 }; //Total size 0x4c
-size_assert(Raceinfo, 0x4c);
+size_assert(RaceInfo, 0x4c);
 
 
 #endif

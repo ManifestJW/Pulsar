@@ -1,13 +1,14 @@
 #ifndef _PULCTRLRACEBASE_
 #define _PULCTRLRACEBASE_
 #include <kamek.hpp>
+#include <MarioKartWii/UI/Page/Page.hpp>
+#include <MarioKartWii/UI/Ctrl/CtrlRace/CtrlRaceBase.hpp>
 #include <MarioKartWii/UI/Page/RaceHUD/RaceHUD.hpp>
 #include <UI/UI.hpp>
 
 //A builder to create any kind of ctrlracebase by registering a count and a create function
 namespace Pulsar {
 namespace UI {
-
 class CustomCtrlBuilder {
     typedef u32(CountFunc)();
     typedef void (CreateFunc)(Page& page, u32 initialIdx, u32);
@@ -24,7 +25,6 @@ private:
     CustomCtrlBuilder* next;
     static CustomCtrlBuilder* sHooks;
 };
-
 }//namespace UI
 }//namespace Pulsar
 

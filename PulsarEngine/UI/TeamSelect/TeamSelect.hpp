@@ -3,8 +3,7 @@
 #include <kamek.hpp>
 #include <MarioKartWii/UI/Page/Menu/Menu.hpp>
 #include <MarioKartWii/UI/Page/Menu/MiiSelect.hpp>
-#include <UI/UI.hpp>
-#include <UI/ToggleControls.hpp>
+#include <UI/ToggleButton.hpp>
 
 
 //Custom Page that allows the host (and only the host) to arrange teams as they see fit. This also has a ToggleButton to disable it if wanted
@@ -14,7 +13,6 @@ namespace UI {
 
 class TeamSelect : public Pages::MenuInteractable {
 public:
-    static const PulPageId id = PULPAGE_TEAMSELECT;
     TeamSelect();
     void OnInit() override;
     void BeforeEntranceAnimations() override;

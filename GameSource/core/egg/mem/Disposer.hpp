@@ -5,7 +5,6 @@
 
 namespace EGG {
 class Heap;
-
 class Disposer { //a way to garbage collect objects when a heap is destroyed
     friend class Heap;
 protected:
@@ -18,7 +17,7 @@ private:
 }; // Total size 0x10
 
 template<class T>
-class TDisposer : public Disposer {
+class TDisposer: public Disposer {
 public:
     //code for the dtor
     ~TDisposer() override;

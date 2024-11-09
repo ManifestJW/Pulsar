@@ -13,11 +13,10 @@ public:
     ~FriendStatusButtonRaceAfter() override; //8064dba4 vtable 808c0350
     void InitSelf() override; //0x18 8064dd38
     void OnUpdate() override; //0x1c 8064dd3c
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x28 8064fb28
+    int GetRuntimeTypeInfo() const override; //0x28 8064fb28
     const char* GetClassName() const override; //0x2c 8064db5c
 
     void Load(); //8064dbfc
-    void UpdateStatus(); //8064dd9c
 };//Total Size 0x254
 size_assert(FriendStatusButtonRaceAfter, 0x254);
 
@@ -32,7 +31,7 @@ public:
     void OnInit() override; //0x28 8064d908 
     void OnActivate() override; //0x30 8064d994
     void BeforeControlUpdate() override; //0x48 8064db00
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 8064fb3c
+    int GetRuntimeTypeInfo() const override; //0x60 8064fb3c
 
     ManipulatorManager manipulatorManager; //0x44
     CountDownTimerControl countdownControl; //0x54
@@ -51,7 +50,7 @@ public:
     void OnActivate() override; //0x30 8064e3d8
     void BeforeEntranceAnimations() override; //0x38 8064e4dc
     void AfterControlUpdate() override; //0x4c 8064e4f0
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 8064fb1c
+    int GetRuntimeTypeInfo() const override; //0x60 8064fb1c
 
     void OnContinueRaceClick(PushButton& continueButton, u32 hudSlotId); //8064e690
     void OnFriendButtonClick(FriendStatusButtonRaceAfter& friendButton, u32 hudSlotId); //8064e80c
@@ -81,7 +80,7 @@ public:
     void OnActivate() override; //0x30 8064ed34
     void OnDeactivate() override; //0x34 8064edf8
     void AfterControlUpdate() override; //0x4c 8064ee04
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 8064fb08
+    int GetRuntimeTypeInfo() const override; //0x60 8064fb08
 
     void OnYesButtonClick(PushButton& button, u32 hudSlotId); //8064efa4
     void OnNoButtonClick(PushButton& button, u32 hudSlotId); //8064f124
@@ -101,13 +100,12 @@ size_assert(WWRaceEndQuit, 0x8bc);
 class WWRaceEndWait : public Page { //ID 0x48 "Please wait a moment" at the end of online races
 public:
     static const PageId id = PAGE_WWRACEEND_WAIT;
-    static const char msgWindowBRCTR[]; //80899ec7
     WWRaceEndWait(); //8064f168
     ~WWRaceEndWait() override; //8064f1b4 vtable 808c0200
     void OnInit() override; //0x28 8064f228
-    void OnActivate() override; //0x30 8064f320
+    void OnActivate() override; //0x30 8064float0
     void AfterControlUpdate() override; //0x4c 8064f374 very interesting, sets next section
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 8064faf4
+    int GetRuntimeTypeInfo() const override; //0x60 8064faf4
     ManipulatorManager manipulatorManager; //0x44
     SimpleMessageWindowControl msgWindow; //0x54
     u32 state; //0x1c8 0 nothing, 1 isDisplayingText? unsure
@@ -121,7 +119,7 @@ public:
     ~DisableHomeButton() override; //8064fa1c vtable 808c019c
     int IsHomeMenuWorking() const override; //0x14 8064fae0 returns 3
     void OnInit() override; //0x28 8064fa84
-    const ut::detail::RuntimeTypeInfo* GetRuntimeTypeInfo() const override; //0x60 8064fae8
+    int GetRuntimeTypeInfo() const override; //0x60 8064fae8
     ManipulatorManager manipulatorManager; //0x44
 }; //total size 0x54
 size_assert(DisableHomeButton, 0x54);

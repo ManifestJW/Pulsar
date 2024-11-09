@@ -7,9 +7,10 @@
 namespace nw4r {
 namespace math {
 
-struct VEC2 : Vec2D {
+struct VEC2 {
     VEC2() {}
     VEC2(float x, float z) { this->x = x; this->z = z; }
+    float x, z;
 };
 
 struct VEC3 : Vec {

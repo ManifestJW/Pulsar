@@ -9,11 +9,6 @@
 namespace nw4r {
 namespace g3d {
 
-struct ClrAnmResult {
-    u32 bRgbaExist;
-    u32 rgba[11];
-    u32 rgbaMask[11];
-};
 
 struct ResAnmClrAnmData {
     u32 rgbaMask;

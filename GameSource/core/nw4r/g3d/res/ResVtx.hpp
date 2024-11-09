@@ -55,9 +55,6 @@ struct ResVtxClrData
     //color data
 };
 
-class ResVtxPos : public ResCommon<ResVtxPosData> {};
-class ResVtxNrm : public ResCommon<ResVtxNrmData> {};
-class ResVtxClr : public ResCommon<ResVtxClrData> {};
 
 }//namespace g3d   
 }//namespace nw4r

@@ -2,9 +2,8 @@
 #define _ARC_
 #include <types.hpp>
 
-namespace ARC {
 //https://github.com/sepalani/MHTrIDA/blob/master/server/tcp/p8200/RMHP08.rso.map
-struct Header { //https://wiki.tockdom.com/wiki/U8_(File_Format)
+struct ARCHeader { //https://wiki.tockdom.com/wiki/U8_(File_Format)
     u32 Magic;
     u32 nodeOffset;
     u32 combinedNodeSize;
@@ -12,7 +11,7 @@ struct Header { //https://wiki.tockdom.com/wiki/U8_(File_Format)
     u32 reserved[4];
 }; //total size 0x20
 
-struct Node {
+struct ARCNode {
     u32 isFolder : 4;
     u32 nameOffset : 24;
     union {
@@ -25,9 +24,9 @@ struct Node {
     } folder;
 }; //total size 0xc
 
-struct Handle {
-    Header* header;
-    Node* nodes;
+struct ARCHandle {
+    ARCHeader* header;
+    ARCNode* nodes;
     void* rawFile;
     u32 entryNum;
     char* fstStringPtr;
@@ -35,40 +34,40 @@ struct Handle {
     u32 curDir;
 }; //total size 0x1c
 
-struct FileInfo {
-    Handle* handle;
+struct ARCFileInfo {
+    ARCHandle* handle;
     u32 startOffset;
     u32 length;
 };
 
-struct Dir {
-    Handle* handle;
+struct ARCDir {
+    ARCHandle* handle;
     u32 entryNum;
     u32 location;
     u32 next;
 };
 
-struct DirEntry {
-    Handle* handle;
+struct ARCDirEntry {
+    ARCHandle* handle;
     u32 entryNum;
     BOOL isDir;
     char* name;
 };
 
-BOOL InitHandle(void* Start, Handle* handle); //80124500
-BOOL Open(Handle* handle, const char* fileName, FileInfo* fileInfo); //801245a0
-BOOL FastOpen(Handle* handle, s32 entrynum, FileInfo* fileInfo); //80124844
-s32 ConvertPathToEntrynum(Handle* handle, const char* pathPtr); //80124894
-BOOL EntrynumIsDir(const Handle* handle, s32 entrynum); //80124af8
-void* GetStartAddrInMem(FileInfo* fileInfo); //80124cc0
-u32 GetStartOffset(FileInfo* fileInfo); //80124cd4
-u32 GetLength(FileInfo* fileInfo); //80124cdc
-BOOL Close(FileInfo* fileInfo); //80124ce4
-BOOL ChangeDir(Handle* handle, const char* dirName); //80124cec
-BOOL OpenDir(Handle* handle, const char* dirName, Dir* dir); //80124d44
-BOOL ReadDir(Dir* dir, DirEntry* dirent); //80124dc0
-BOOL CloseDir(Dir* dir); //80124e78
-
-}//namespace ARC
+extern "C" {
+    BOOL ArcInitHandle(void* arcStart, ARCHandle* handle); //80124500
+    BOOL ARCOpen(ARCHandle* handle, const char* fileName, ARCFileInfo* fileInfo); //801245a0
+    BOOL ARCFastOpen(ARCHandle* handle, s32 entrynum, ARCFileInfo* fileInfo); //80124844
+    s32 ARCConvertPathToEntrynum(ARCHandle* handle, const char* pathPtr); //80124894
+    BOOL ARCEntrynumIsDir(const ARCHandle* handle, s32 entrynum); //80124af8
+    void* ARCGetStartAddrInMem(ARCFileInfo* fileInfo); //80124cc0
+    u32 ARCGetStartOffset(ARCFileInfo* fileInfo); //80124cd4
+    u32 ARCGetLength(ARCFileInfo* fileInfo); //80124cdc
+    BOOL ARCClose(ARCFileInfo* fileInfo); //80124ce4
+    BOOL ARCChangeDir(ARCHandle* handle, const char* dirName); //80124cec
+    BOOL ARCOpenDir(ARCHandle* handle, const char* dirName, ARCDir* dir); //80124d44
+    BOOL ARCReadDir(ARCDir* dir, ARCDirEntry* dirent); //80124dc0
+    BOOL ARCCloseDir(ARCDir* dir); //80124e78
+}
 
 #endif

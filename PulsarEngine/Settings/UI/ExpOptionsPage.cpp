@@ -4,7 +4,11 @@
 
 namespace Pulsar {
 namespace UI {
-
+ExpOptions* CreateOptionsPage() {
+    return new(ExpOptions);
+};
+kmCall(0x8062453c, CreateOptionsPage);
+kmWrite32(0x80624530, 0x60000000); //nop the original new
 kmWrite32(0x805fd754, 0x60000000); //nop the InitControl call in the init func
 
 void ExpOptions::OnInit() {
@@ -16,13 +20,14 @@ void ExpOptions::OnInit() {
 
     this->settingsButton.buttonId = 5;
     this->settingsButton.SetOnClickHandler(this->onButtonClickHandler, 0);
-    this->settingsButton.SelectInitial(0);
+    this->settingsButton.SelectInitialButton(0);
+    this->topSettingsPage = SettingsPanel::firstId;
 }
 
 void ExpOptions::ExpandedOnButtonClick(PushButton& pushButton, u32 hudSlotId) {
     if(pushButton.buttonId == 5) {
-        this->nextPageId = static_cast<PageId>(SettingsPanel::id);
-        this->EndStateAnimated(0, pushButton.GetAnimationFrameSize());
+        this->nextPageId = this->topSettingsPage;
+        this->EndStateAnimated(pushButton.GetAnimationFrameSize(), 0);
     }
     else {
         this->OnButtonClick(pushButton, hudSlotId);

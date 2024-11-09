@@ -6,14 +6,7 @@
 namespace MEM {
 struct iExpHeapMBlockHead { //block of memory you allocate
     u16 magic; //UD, FR
-    union { //Attribute
-        u16 val;
-        struct {
-            u16                  allocDir : 1;
-            u16                  alignment : 7;
-            u16                  groupID : 8;
-        };
-    }attribute;
+    u16 attribute; //0x2
     u32 blockSize; //0x4
     iExpHeapMBlockHead* prevBlock; //0x8
     iExpHeapMBlockHead* nextBlock; //0xc

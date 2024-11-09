@@ -7,10 +7,10 @@
 
 namespace Pulsar {
 namespace UI {
-int GetTrackBMGId(PulsarId pulsarId, bool useCommonName);
+int GetTrackBMGId(PulsarId pulsarId);
 
 inline void GetTrackBMG(char* dest, PulsarId id) {
-    const wchar_t* name = UI::GetCustomMsg(GetTrackBMGId(id, false));
+    const wchar_t* name = UI::GetCustomMsg(GetTrackBMGId(id));
     wchar_t polish[0x102];
 
     const wchar_t* token = wcschr(name, L'\x1A');
@@ -18,7 +18,7 @@ inline void GetTrackBMG(char* dest, PulsarId id) {
 
     wchar_t* cur = polish;
     const wchar_t* pos = name;
-    while (token != nullptr) {
+    while(token != nullptr) {
 
         wcsncpy(cur, pos, token - pos);
         cur = cur + (token - pos);

@@ -5,7 +5,7 @@
 
 //_sinit_ at 807a9fc8
 namespace Item {
-class ObjKinokoPowerful : public ObjMiddle { //Golden Mushroom
+class ObjKinokoPowerful : public Obj { //Golden Mushroom
 public:
     static Obj** CreateArray(u32 count); //807a9ee8
     void InitSelf() override; //807a9fac vtable 808d2110
